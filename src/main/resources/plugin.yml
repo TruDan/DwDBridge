@@ -1,0 +1,12 @@
+name: ${project.name}
+main: net.dwdg.dwdbridge.DwDBridgePlugin
+version: ${project.version}
+depends: [Vault]
+dev-url: ${project.url}
+commands:
+    trufix:
+      usage: /trufix [player]
+      description: Fix rank
+    rank:
+      usage: /rank
+      description: Displays current rank

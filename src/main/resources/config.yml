@@ -1,0 +1,13 @@
+xenConfig:
+    host: "localhost"
+    db: "xenforo"
+    user: "root"
+    pass: ""
+    port: 3306
+uuidField: "UUID"
+fallbackRank: "Guest"
+rankSync:
+    '1': "Member"
+    '2': "Admin"
+messages:
+    errorGettingInfo: "&3[&bForums&3] &7Your account is not linked to a forums account. To find out how, visit &bhttps://help.dwdg.net/forumIntergration"
