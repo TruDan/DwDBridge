@@ -113,4 +113,12 @@ public class DwDPlayer {
     public void setMcConfirmed(boolean confirmed) {
         this.mcConfirmed = confirmed;
     }
+    
+    public ArrayList<Integer> getSecondaryGroups() {
+        return secondaryGroupIDs;
+    }
+    
+    public Integer getPrimaryGroup() {
+        return primaryGroupID;
+    }
 }

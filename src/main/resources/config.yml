@@ -11,3 +11,7 @@ rankSync:
     '2': "Admin"
 messages:
     errorGettingInfo: "&3[&bForums&3] &7Your account is not linked to a forums account. To find out how, visit &bhttps://help.dwdg.net/forumIntergration"
+    confirmed: "&3[&bForums&3] &7Your minecraft account is now linked to &a%N&7."
+    denied: "&3[&bForums&3] &7You have rejected a request from &c%N&7."
+    askConfirmation: "&3[&bForums&3] &7'&a%N&7' has made a request to link to this minecraft account. Please &a/confirm&7 or &c/deny&7 this request."
+    ranksAdded: "&3[&bForums&3] &7Your ranks have been updated to: %R."
