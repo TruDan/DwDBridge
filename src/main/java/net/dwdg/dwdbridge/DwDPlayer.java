@@ -182,8 +182,8 @@ public class DwDPlayer {
 
             for (int gId : getSecondaryGroups()) {
                 String gName = plugin.getConfig().getString("rankSync." + gId);
-                if (ranksToSync.contains(gName.toLowerCase())) {
-                    if (gName != null) {
+                if (gName != null) {
+                    if (ranksToSync.contains(gName.toLowerCase())) {
                         DwDBridgePlugin.permission.playerAddGroup(player, gName);
                         ranksAdded += " " + gName;
                     }
