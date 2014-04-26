@@ -23,6 +23,8 @@ public class DwDBridgePlugin extends JavaPlugin {
     public void onEnable() {
         DwDBridgePlugin.plugin = this;
         setupPermissions();
+        
+        saveConfig();
 
         xenConnection = new MySQL(Logger.getLogger("Minecraft"), "[DwDBridge] ", getConfig().getString("xenConfig.host", "localhost"), getConfig().getInt("xenConfig.port", 3306), getConfig().getString("xenConfig.db", "xenforo"), getConfig().getString("xenConfig.user", "root"), getConfig().getString("xenConfig.pass", ""));
         

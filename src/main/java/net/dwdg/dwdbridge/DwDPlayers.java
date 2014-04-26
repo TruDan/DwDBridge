@@ -34,11 +34,13 @@ public class DwDPlayers implements Listener {
     
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
+        dwdPlayers.get(e.getPlayer().getUniqueId()).save();
         dwdPlayers.remove(e.getPlayer().getUniqueId());
     }
     
     @EventHandler
     public void onPlayerKick(PlayerKickEvent e) {
+        dwdPlayers.get(e.getPlayer().getUniqueId()).save();
         dwdPlayers.remove(e.getPlayer().getUniqueId());
     }
     
