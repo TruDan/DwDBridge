@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -13,7 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
  *
  * @author Dan
  */
-public class DwDPlayers {
+public class DwDPlayers implements Listener {
     
     private static Map<UUID, DwDPlayer> dwdPlayers = new HashMap<>();
     

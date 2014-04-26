@@ -2,8 +2,10 @@ package net.dwdg.dwdbridge.listeners;
 
 import net.dwdg.dwdbridge.DwDBridgePlugin;
 import net.dwdg.dwdbridge.DwDPlayer;
+import net.dwdg.dwdbridge.DwDPlayers;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -11,11 +13,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
  *
  * @author Dan
  */
-public class PlayerListener {
+public class PlayerListener implements Listener {
 
     @EventHandler
     public void playerJoin(PlayerJoinEvent event) {
-        DwDPlayer pCheck = new DwDPlayer(event.getPlayer());
+        DwDPlayer pCheck = DwDPlayers.getPlayer(event.getPlayer().getUniqueId());
         DwDBridgePlugin plugin = DwDBridgePlugin.getPlugin();
 
         if (pCheck.validate()) {
@@ -70,7 +72,7 @@ public class PlayerListener {
 
     @EventHandler
     public void PlayerCommand(PlayerCommandPreprocessEvent event) {
-        DwDPlayer pCheck = new DwDPlayer(event.getPlayer());
+        DwDPlayer pCheck = DwDPlayers.getPlayer(event.getPlayer().getUniqueId());
         DwDBridgePlugin plugin = DwDBridgePlugin.getPlugin();
 
         if (event.getMessage().startsWith("/confirm")) {

@@ -3,6 +3,7 @@ package net.dwdg.dwdbridge;
 import java.util.logging.Logger;
 import lib.PatPeter.SQLibrary.Database;
 import lib.PatPeter.SQLibrary.MySQL;
+import net.dwdg.dwdbridge.listeners.PlayerListener;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -29,6 +30,10 @@ public class DwDBridgePlugin extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             System.out.println("Connection Failed. DwDBridge Disabled.");
         }
+        
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(), plugin);
+        Bukkit.getPluginManager().registerEvents(new DwDPlayers(), plugin);
+        
         System.out.println("Connection Succeeded. DwDBridge Ready.");
     }
 
