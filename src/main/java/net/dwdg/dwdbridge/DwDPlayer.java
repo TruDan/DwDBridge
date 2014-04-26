@@ -67,7 +67,6 @@ public class DwDPlayer {
         String sqlStatement = "SELECT f.`user_id`, u.`username`, u.`user_group_id`, u.`secondary_group_ids`, u.`conversations_unread` FROM `xf_user_field_value` f LEFT JOIN `xf_user` u ON f.`user_id`=u.`user_id` WHERE f.`field_id`='" + plugin.getConfig().getString("uuidField") + "' AND f.`field_value`='" + player.getUniqueId().toString() + "' LIMIT 1";
         ResultSet rS = null;
         try {
-            System.out.println(sqlStatement);
             rS = plugin.getDb().query(sqlStatement);
 
             if (rS.next()) {
@@ -87,8 +86,6 @@ public class DwDPlayer {
                 return true;
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
         }
 
         return false;

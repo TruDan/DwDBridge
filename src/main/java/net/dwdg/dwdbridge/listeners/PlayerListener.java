@@ -50,8 +50,6 @@ public class PlayerListener implements Listener {
         DwDPlayer pCheck = DwDPlayers.getPlayer(event.getPlayer().getUniqueId());
         DwDBridgePlugin plugin = DwDBridgePlugin.getPlugin();
 
-        System.out.println(event.getMessage());
-
         if (event.getMessage().toLowerCase().startsWith("/confirm") || event.getMessage().equalsIgnoreCase("/confirm")) {
             if (!pCheck.isMcConfirmed()) {
                 if (pCheck.getXenID() > 0) {
