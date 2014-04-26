@@ -16,38 +16,31 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * @author Dan
  */
 public class DwDPlayers implements Listener {
-    
+
     private static Map<UUID, DwDPlayer> dwdPlayers = new HashMap<>();
-    
+
     public static DwDPlayer getPlayer(UUID uuid) {
-        if(dwdPlayers.containsKey(uuid)) {
+        if (dwdPlayers.containsKey(uuid)) {
             return dwdPlayers.get(uuid);
         }
-        else {
-            DwDPlayer dwdPlayer = new DwDPlayer(Bukkit.getPlayer(uuid));
-            if(Bukkit.getPlayer(uuid).isOnline()) {
-                dwdPlayers.put(uuid, dwdPlayer);
-            }
-            
-            return dwdPlayer;
-        }
+        return null;
     }
-    
-    @EventHandler(priority = EventPriority.HIGHEST)
+
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent e) {
         dwdPlayers.put(e.getPlayer().getUniqueId(), new DwDPlayer(e.getPlayer()));
     }
-    
-    @EventHandler(priority = EventPriority.LOWEST)
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent e) {
         dwdPlayers.get(e.getPlayer().getUniqueId()).save();
         dwdPlayers.remove(e.getPlayer().getUniqueId());
     }
-    
-    @EventHandler(priority = EventPriority.LOWEST)
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerKick(PlayerKickEvent e) {
         dwdPlayers.get(e.getPlayer().getUniqueId()).save();
         dwdPlayers.remove(e.getPlayer().getUniqueId());
     }
-    
+
 }

@@ -17,35 +17,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
  */
 public class PlayerListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void playerJoin(PlayerJoinEvent event) {
+
         DwDPlayer pCheck = DwDPlayers.getPlayer(event.getPlayer().getUniqueId());
         DwDBridgePlugin plugin = DwDBridgePlugin.getPlugin();
 
-        if (pCheck.validate()) {
-            if (!pCheck.isMcConfirmed()) {
-                if (pCheck.getXenID() > 0) {
-                    // Ask for confirmation
-                    event.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            plugin.getConfig().getString("messages.askConfirmation")
-                            .replaceAll("%N", pCheck.getXenUsername())
-                    ));
-                } else {
-                    // Hasnt tied forums account
-                    event.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.errorGettingInfo")));
-                }
-            } else {
-                // Check & Sync rank
-
-                rankSync(event.getPlayer());
-
-            }
-        } else {
-            event.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.errorGettingInfo")));
-        }
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runner(event.getPlayer()),60L);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void PlayerCommand(PlayerCommandPreprocessEvent event) {
         DwDPlayer pCheck = DwDPlayers.getPlayer(event.getPlayer().getUniqueId());
         DwDBridgePlugin plugin = DwDBridgePlugin.getPlugin();
@@ -54,9 +35,9 @@ public class PlayerListener implements Listener {
             if (!pCheck.isMcConfirmed()) {
                 if (pCheck.getXenID() > 0) {
                     // Confirm
+                    pCheck.rankSync();
                     pCheck.setMcConfirmed(true);
-                    rankSync(event.getPlayer());
-                    
+
                     event.setCancelled(true);
                     event.setMessage(ChatColor.translateAlternateColorCodes('&',
                             plugin.getConfig().getString("messages.confirmed")
@@ -84,39 +65,5 @@ public class PlayerListener implements Listener {
                 }
             }
         }
-    }
-
-    private void rankSync(Player player) {
-        DwDPlayer pCheck = DwDPlayers.getPlayer(player.getUniqueId());
-        DwDBridgePlugin plugin = DwDBridgePlugin.getPlugin();
-        
-        // Remove ALL Groups
-        String[] groups = DwDBridgePlugin.permission.getPlayerGroups(player);
-
-        for (String group : groups) {
-            DwDBridgePlugin.permission.playerRemoveGroup(player, group);
-        }
-
-        // Re-Add the correct groups
-        String ranksAdded = "";
-        int pgId = pCheck.getPrimaryGroup();
-        String pgName = plugin.getConfig().getString("rankSync." + pgId);
-        if (pgName != null) {
-            DwDBridgePlugin.permission.playerAddGroup(player, pgName);
-            ranksAdded += " " + pgName;
-        }
-
-        for (int gId : pCheck.getSecondaryGroups()) {
-            String gName = plugin.getConfig().getString("rankSync." + gId);
-            if (gName != null) {
-                DwDBridgePlugin.permission.playerAddGroup(player, gName);
-                ranksAdded += " " + gName;
-            }
-        }
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                plugin.getConfig().getString("messages.ranksAdded")
-                .replaceAll("%N", pCheck.getXenUsername())
-                .replaceAll("%R", ranksAdded)
-        ));
     }
 }

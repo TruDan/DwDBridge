@@ -9,6 +9,12 @@ fallbackRank: "Guest"
 rankSync:
     '1': "Member"
     '2': "Admin"
+syncRanks:
+    - "admin"
+    - "operator"
+    - "mod"
+    - "member"
+    - "guest"
 messages:
     errorGettingInfo: "&3[&bForums&3] &7Your account is not linked to a forums account. To find out how, visit &bhttps://help.dwdg.net/forumIntergration"
     confirmed: "&3[&bForums&3] &7Your minecraft account is now linked to &a%N&7."

@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -26,11 +27,13 @@ public class DwDPlayer {
     private int xenID = 0;
     private String xenUsername = "";
     private int primaryGroupID = 0;
+    private String secondaryGroupIDString = "";
     private ArrayList<Integer> secondaryGroupIDs = new ArrayList<>();
     private int unreadConvos = 0;
 
     // Internal Variables
     private boolean mcConfirmed = false;
+    private boolean hasChanges = false;
 
     public DwDPlayer(Player player) {
         this.player = player;
@@ -70,19 +73,30 @@ public class DwDPlayer {
             rS = plugin.getDb().query(sqlStatement);
 
             if (rS.next()) {
-                xenID = rS.getInt("user_id");
-                xenUsername = rS.getString("username");
-                primaryGroupID = rS.getInt("user_group_id");
-                unreadConvos = rS.getInt("conversations_unread");
-
-                String secondaryGroupIDString = rS.getString("secondary_group_ids");
-                List<String> tmpArr = Arrays.asList(secondaryGroupIDString.split(","));
-
-                for (String tmp : tmpArr) {
-                    secondaryGroupIDs.add(Integer.parseInt(tmp));
+                if (xenID != rS.getInt("user_id")) {
+                    hasChanges = true;
+                    xenID = rS.getInt("user_id");
                 }
+
+                xenUsername = rS.getString("username");
+
+                primaryGroupID = rS.getInt("user_group_id");
+                //unreadConvos = rS.getInt("conversations_unread");
+
+                if (!secondaryGroupIDString.equals(rS.getString("secondary_group_ids"))) {
+                    hasChanges = true;
+                    secondaryGroupIDString = rS.getString("secondary_group_ids");
+                    List<String> tmpArr = Arrays.asList(secondaryGroupIDString.split(","));
+
+                    secondaryGroupIDs.clear();
+
+                    for (String tmp : tmpArr) {
+                        secondaryGroupIDs.add(Integer.parseInt(tmp));
+                    }
+                }
+
                 save();
-                
+
                 return true;
             }
         } catch (Exception e) {
@@ -96,7 +110,8 @@ public class DwDPlayer {
         playerConfig.set("xenID", xenID);
         playerConfig.set("xenUsername", xenUsername);
         playerConfig.set("primaryGroupID", primaryGroupID);
-        playerConfig.set("secondaryGroupIDs", secondaryGroupIDs);
+        playerConfig.set("secondaryGroupIDString", secondaryGroupIDString);
+        playerConfig.set("secondaryGroupIDs", secondaryGroupIDs.toArray());
         playerConfig.set("mcConfirmed", mcConfirmed);
 
         try {
@@ -108,7 +123,7 @@ public class DwDPlayer {
     public boolean removeEntry() {
         String sqlStatement = "UPDATE `xf_user_field_value` SET `field_value`='' WHERE `user_id`='" + xenID + "' AND `field_id`='" + DwDBridgePlugin.getPlugin().getConfig().getString("uuidField") + "'";
         try {
-            ResultSet rs = DwDBridgePlugin.getPlugin().getDb().query(sqlStatement);
+            DwDBridgePlugin.getPlugin().getDb().query(sqlStatement);
             return true;
         } catch (Exception e) {
         }
@@ -137,5 +152,49 @@ public class DwDPlayer {
 
     public Integer getPrimaryGroup() {
         return primaryGroupID;
+    }
+
+    public void rankSync() {
+        DwDBridgePlugin plugin = DwDBridgePlugin.getPlugin();
+
+        if (hasChanges) {
+            List<String> ranksToSync = plugin.getConfig().getStringList("syncRanks");
+
+            // Remove ALL Groups
+            String[] groups = DwDBridgePlugin.permission.getPlayerGroups(player);
+
+            for (String group : groups) {
+                if (ranksToSync.contains(group.toLowerCase())) {
+                    DwDBridgePlugin.permission.playerRemoveGroup(player, group);
+                }
+            }
+
+            // Re-Add the correct groups
+            String ranksAdded = "";
+            int pgId = getPrimaryGroup();
+            String pgName = plugin.getConfig().getString("rankSync." + pgId);
+            if (pgName != null) {
+                if (ranksToSync.contains(pgName.toLowerCase())) {
+                    DwDBridgePlugin.permission.playerAddGroup(player, pgName);
+                    ranksAdded += " " + pgName;
+                }
+            }
+
+            for (int gId : getSecondaryGroups()) {
+                String gName = plugin.getConfig().getString("rankSync." + gId);
+                if (ranksToSync.contains(gName.toLowerCase())) {
+                    if (gName != null) {
+                        DwDBridgePlugin.permission.playerAddGroup(player, gName);
+                        ranksAdded += " " + gName;
+                    }
+                }
+            }
+
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    plugin.getConfig().getString("messages.ranksAdded")
+                    .replaceAll("%N", getXenUsername())
+                    .replaceAll("%R", ranksAdded)
+            ));
+        }
     }
 }
