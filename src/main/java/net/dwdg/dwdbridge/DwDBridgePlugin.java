@@ -69,7 +69,7 @@ public class DwDBridgePlugin extends JavaPlugin {
                     DwDPlayer dwdP = DwDPlayers.getPlayer(player.getUniqueId());
                     dwdP.validate();
                     dwdP.rankSync();
-                    sender.sendMessage(ChatColor.GREEN+"Syncing that players rank.");
+                    sender.sendMessage(ChatColor.GREEN+"Syncing "+player.getDisplayName()+ChatColor.GREEN+"'s rank.");
                 }
             } else {
                 if (sender instanceof Player) {
@@ -77,7 +77,7 @@ public class DwDBridgePlugin extends JavaPlugin {
                     DwDPlayer dwdP = DwDPlayers.getPlayer(player.getUniqueId());
                     dwdP.validate();
                     dwdP.rankSync();
-                    sender.sendMessage(ChatColor.GREEN+"Your rank is syncronising.");
+                    sender.sendMessage(ChatColor.GREEN+"Your rank is up to date.");
                 }
             }
             return true;

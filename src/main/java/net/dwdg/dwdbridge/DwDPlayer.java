@@ -68,7 +68,7 @@ public class DwDPlayer {
     public boolean validate() {
         DwDBridgePlugin plugin = DwDBridgePlugin.getPlugin();
 
-        String sqlStatement = "SELECT f.`user_id`, u.`username`, u.`user_group_id`, u.`secondary_group_ids`, u.`conversations_unread` FROM `xf_user_field_value` f LEFT JOIN `xf_user` u ON f.`user_id`=u.`user_id` WHERE f.`field_id`='" + plugin.getConfig().getString("uuidField") + "' AND f.`field_value`='" + player.getUniqueId().toString() + "' LIMIT 1";
+        String sqlStatement = "SELECT f.`user_id`, u.`username`, u.`user_group_id`, u.`secondary_group_ids`, u.`is_mcConfirmed` FROM `xf_user_field_value` f LEFT JOIN `xf_user` u ON f.`user_id`=u.`user_id` WHERE f.`field_id`='" + plugin.getConfig().getString("uuidField") + "' AND f.`field_value`='" + player.getUniqueId().toString() + "' LIMIT 1";
         ResultSet rS = null;
         try {
             rS = plugin.getDb().query(sqlStatement);
@@ -80,9 +80,12 @@ public class DwDPlayer {
                 }
 
                 xenUsername = rS.getString("username");
-
                 primaryGroupID = rS.getInt("user_group_id");
-                //unreadConvos = rS.getInt("conversations_unread");
+                
+                if(mcConfirmed != (rS.getInt("is_mcConfirmed") == 1)) {
+                    hasChanges = true;
+                    mcConfirmed = (rS.getInt("is_mcConfirmed") == 1);
+                }
 
                 if (!secondaryGroupIDString.equals(rS.getString("secondary_group_ids"))) {
                     hasChanges = true;
@@ -200,6 +203,8 @@ public class DwDPlayer {
                     .replaceAll("%N", getXenUsername())
                     .replaceAll("%R", ranksAdded)
             ));
+            
+            hasChanges = false;
         }
     }
 }
