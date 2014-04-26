@@ -47,6 +47,7 @@ public class DwDPlayer {
             xenID = playerConfig.getInt("xenID", 0);
             xenUsername = playerConfig.getString("xenUsername", "");
             primaryGroupID = playerConfig.getInt("primaryGroupID", 0);
+            secondaryGroupIDString = playerConfig.getString("secondaryGroupIDString", "");
             List<String> tmpArr = playerConfig.getStringList("secondaryGroupIDs");
             for (String tmp : tmpArr) {
                 secondaryGroupIDs.add(Integer.parseInt(tmp));
@@ -176,7 +177,9 @@ public class DwDPlayer {
             if (pgName != null) {
                 if (ranksToSync.contains(pgName.toLowerCase())) {
                     DwDBridgePlugin.permission.playerAddGroup(player, pgName);
-                    ranksAdded += " " + pgName;
+                    if (!ranksAdded.contains(pgName)) {
+                        ranksAdded += " " + pgName;
+                    }
                 }
             }
 
@@ -185,7 +188,9 @@ public class DwDPlayer {
                 if (gName != null) {
                     if (ranksToSync.contains(gName.toLowerCase())) {
                         DwDBridgePlugin.permission.playerAddGroup(player, gName);
-                        ranksAdded += " " + gName;
+                        if (!ranksAdded.contains(pgName)) {
+                            ranksAdded += " " + pgName;
+                        }
                     }
                 }
             }
