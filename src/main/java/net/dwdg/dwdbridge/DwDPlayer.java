@@ -26,7 +26,7 @@ public class DwDPlayer {
     private int xenID = 0;
     private String xenUsername = "";
     private int primaryGroupID = 0;
-    private ArrayList<Integer> secondaryGroupIDs;
+    private ArrayList<Integer> secondaryGroupIDs = new ArrayList<>();
     private int unreadConvos = 0;
 
     // Internal Variables
@@ -39,7 +39,7 @@ public class DwDPlayer {
         playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 
         // Check if we already have data for this user
-        if (!playerFile.exists()) {
+        if (playerFile.exists()) {
             // Load Data
             xenID = playerConfig.getInt("xenID", 0);
             xenUsername = playerConfig.getString("xenUsername", "");
@@ -67,9 +67,10 @@ public class DwDPlayer {
         String sqlStatement = "SELECT f.`user_id`, u.`username`, u.`user_group_id`, u.`secondary_group_ids`, u.`conversations_unread` FROM `xf_user_field_value` f LEFT JOIN `xf_user` u ON f.`user_id`=u.`user_id` WHERE f.`field_id`='" + plugin.getConfig().getString("uuidField") + "' AND f.`field_value`='" + player.getUniqueId().toString() + "' LIMIT 1";
         ResultSet rS = null;
         try {
-            plugin.getDb().query(sqlStatement);
+            System.out.println(sqlStatement);
+            rS = plugin.getDb().query(sqlStatement);
 
-            if (rS.first()) {
+            if (rS.next()) {
                 xenID = rS.getInt("user_id");
                 xenUsername = rS.getString("username");
                 primaryGroupID = rS.getInt("user_group_id");
@@ -81,15 +82,26 @@ public class DwDPlayer {
                 for (String tmp : tmpArr) {
                     secondaryGroupIDs.add(Integer.parseInt(tmp));
                 }
+                save();
+                
                 return true;
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
 
         return false;
     }
-    
+
     public void save() {
+
+        playerConfig.set("xenID", xenID);
+        playerConfig.set("xenUsername", xenUsername);
+        playerConfig.set("primaryGroupID", primaryGroupID);
+        playerConfig.set("secondaryGroupIDs", secondaryGroupIDs);
+        playerConfig.set("mcConfirmed", mcConfirmed);
+
         try {
             playerConfig.save(playerFile);
         } catch (IOException ex) {
@@ -100,9 +112,7 @@ public class DwDPlayer {
         String sqlStatement = "UPDATE `xf_user_field_value` SET `field_value`='' WHERE `user_id`='" + xenID + "' AND `field_id`='" + DwDBridgePlugin.getPlugin().getConfig().getString("uuidField") + "'";
         try {
             ResultSet rs = DwDBridgePlugin.getPlugin().getDb().query(sqlStatement);
-            if (rs.first()) {
-                return true;
-            }
+            return true;
         } catch (Exception e) {
         }
         return false;
@@ -123,11 +133,11 @@ public class DwDPlayer {
     public void setMcConfirmed(boolean confirmed) {
         this.mcConfirmed = confirmed;
     }
-    
+
     public ArrayList<Integer> getSecondaryGroups() {
         return secondaryGroupIDs;
     }
-    
+
     public Integer getPrimaryGroup() {
         return primaryGroupID;
     }

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -23,22 +24,27 @@ public class DwDPlayers implements Listener {
             return dwdPlayers.get(uuid);
         }
         else {
-            return new DwDPlayer(Bukkit.getPlayer(uuid));
+            DwDPlayer dwdPlayer = new DwDPlayer(Bukkit.getPlayer(uuid));
+            if(Bukkit.getPlayer(uuid).isOnline()) {
+                dwdPlayers.put(uuid, dwdPlayer);
+            }
+            
+            return dwdPlayer;
         }
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent e) {
         dwdPlayers.put(e.getPlayer().getUniqueId(), new DwDPlayer(e.getPlayer()));
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerQuit(PlayerQuitEvent e) {
         dwdPlayers.get(e.getPlayer().getUniqueId()).save();
         dwdPlayers.remove(e.getPlayer().getUniqueId());
     }
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerKick(PlayerKickEvent e) {
         dwdPlayers.get(e.getPlayer().getUniqueId()).save();
         dwdPlayers.remove(e.getPlayer().getUniqueId());

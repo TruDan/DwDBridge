@@ -31,10 +31,11 @@ public class DwDBridgePlugin extends JavaPlugin {
         if (!xenConnection.open()) {
             Bukkit.getPluginManager().disablePlugin(this);
             System.out.println("Connection Failed. DwDBridge Disabled.");
+            return;
         }
         
-        Bukkit.getPluginManager().registerEvents(new PlayerListener(), plugin);
-        Bukkit.getPluginManager().registerEvents(new DwDPlayers(), plugin);
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+        Bukkit.getPluginManager().registerEvents(new DwDPlayers(), this);
         
         System.out.println("Connection Succeeded. DwDBridge Ready.");
     }

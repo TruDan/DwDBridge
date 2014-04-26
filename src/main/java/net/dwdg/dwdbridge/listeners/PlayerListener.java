@@ -4,7 +4,9 @@ import net.dwdg.dwdbridge.DwDBridgePlugin;
 import net.dwdg.dwdbridge.DwDPlayer;
 import net.dwdg.dwdbridge.DwDPlayers;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -15,7 +17,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
  */
 public class PlayerListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void playerJoin(PlayerJoinEvent event) {
         DwDPlayer pCheck = DwDPlayers.getPlayer(event.getPlayer().getUniqueId());
         DwDBridgePlugin plugin = DwDBridgePlugin.getPlugin();
@@ -35,34 +37,7 @@ public class PlayerListener implements Listener {
             } else {
                 // Check & Sync rank
 
-                // Remove ALL Groups
-                String[] groups = DwDBridgePlugin.permission.getPlayerGroups(event.getPlayer());
-
-                for (String group : groups) {
-                    DwDBridgePlugin.permission.playerRemoveGroup(event.getPlayer(), group);
-                }
-
-                // Re-Add the correct groups
-                String ranksAdded = "";
-                int pgId = pCheck.getPrimaryGroup();
-                String pgName = plugin.getConfig().getString("rankSync." + pgId);
-                if (pgName != null) {
-                    DwDBridgePlugin.permission.playerAddGroup(event.getPlayer(), pgName);
-                    ranksAdded += " "+pgName;
-                }
-
-                for (int gId : pCheck.getSecondaryGroups()) {
-                    String gName = plugin.getConfig().getString("rankSync." + gId);
-                    if (gName != null) {
-                        DwDBridgePlugin.permission.playerAddGroup(event.getPlayer(), gName);
-                    ranksAdded += " "+gName;
-                    }
-                }
-                event.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        plugin.getConfig().getString("messages.ranksAdded")
-                        .replaceAll("%N", pCheck.getXenUsername())
-                        .replaceAll("%R",ranksAdded)
-                ));
+                rankSync(event.getPlayer());
 
             }
         } else {
@@ -75,31 +50,75 @@ public class PlayerListener implements Listener {
         DwDPlayer pCheck = DwDPlayers.getPlayer(event.getPlayer().getUniqueId());
         DwDBridgePlugin plugin = DwDBridgePlugin.getPlugin();
 
-        if (event.getMessage().startsWith("/confirm")) {
+        System.out.println(event.getMessage());
+
+        if (event.getMessage().toLowerCase().startsWith("/confirm") || event.getMessage().equalsIgnoreCase("/confirm")) {
             if (!pCheck.isMcConfirmed()) {
                 if (pCheck.getXenID() > 0) {
                     // Confirm
                     pCheck.setMcConfirmed(true);
+                    rankSync(event.getPlayer());
+                    
                     event.setCancelled(true);
+                    event.setMessage(ChatColor.translateAlternateColorCodes('&',
+                            plugin.getConfig().getString("messages.confirmed")
+                            .replaceAll("%N", pCheck.getXenUsername())));
                     event.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',
                             plugin.getConfig().getString("messages.confirmed")
-                            .replaceAll("%N",pCheck.getXenUsername())
+                            .replaceAll("%N", pCheck.getXenUsername())
                     ));
                 }
             }
-        } else if (event.getMessage().startsWith("/deny")) {
+        } else if (event.getMessage().toLowerCase().startsWith("/deny") || event.getMessage().equalsIgnoreCase("/deny")) {
             if (!pCheck.isMcConfirmed()) {
                 if (pCheck.getXenID() > 0) {
                     // Confirm
                     pCheck.setMcConfirmed(false);
                     pCheck.removeEntry();
                     event.setCancelled(true);
+                    event.setMessage(ChatColor.translateAlternateColorCodes('&',
+                            plugin.getConfig().getString("messages.denied")
+                            .replaceAll("%N", pCheck.getXenUsername())));
                     event.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&',
                             plugin.getConfig().getString("messages.denied")
-                            .replaceAll("%N",pCheck.getXenUsername())
+                            .replaceAll("%N", pCheck.getXenUsername())
                     ));
                 }
             }
         }
+    }
+
+    private void rankSync(Player player) {
+        DwDPlayer pCheck = DwDPlayers.getPlayer(player.getUniqueId());
+        DwDBridgePlugin plugin = DwDBridgePlugin.getPlugin();
+        
+        // Remove ALL Groups
+        String[] groups = DwDBridgePlugin.permission.getPlayerGroups(player);
+
+        for (String group : groups) {
+            DwDBridgePlugin.permission.playerRemoveGroup(player, group);
+        }
+
+        // Re-Add the correct groups
+        String ranksAdded = "";
+        int pgId = pCheck.getPrimaryGroup();
+        String pgName = plugin.getConfig().getString("rankSync." + pgId);
+        if (pgName != null) {
+            DwDBridgePlugin.permission.playerAddGroup(player, pgName);
+            ranksAdded += " " + pgName;
+        }
+
+        for (int gId : pCheck.getSecondaryGroups()) {
+            String gName = plugin.getConfig().getString("rankSync." + gId);
+            if (gName != null) {
+                DwDBridgePlugin.permission.playerAddGroup(player, gName);
+                ranksAdded += " " + gName;
+            }
+        }
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                plugin.getConfig().getString("messages.ranksAdded")
+                .replaceAll("%N", pCheck.getXenUsername())
+                .replaceAll("%R", ranksAdded)
+        ));
     }
 }
