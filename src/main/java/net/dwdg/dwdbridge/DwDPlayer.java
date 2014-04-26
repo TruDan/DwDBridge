@@ -34,6 +34,7 @@ public class DwDPlayer {
     // Internal Variables
     private boolean mcConfirmed = false;
     private boolean hasChanges = false;
+    private boolean shouldForceUpdate = false;
 
     public DwDPlayer(Player player) {
         this.player = player;
@@ -84,6 +85,7 @@ public class DwDPlayer {
                 
                 if(mcConfirmed != (rS.getInt("is_mcConfirmed") == 1)) {
                     hasChanges = true;
+                    shouldForceUpdate = true;
                     mcConfirmed = (rS.getInt("is_mcConfirmed") == 1);
                 }
 
@@ -156,6 +158,10 @@ public class DwDPlayer {
 
     public Integer getPrimaryGroup() {
         return primaryGroupID;
+    }
+    
+    public boolean shouldForceUpdate() {
+        return shouldForceUpdate;
     }
 
     public void rankSync() {

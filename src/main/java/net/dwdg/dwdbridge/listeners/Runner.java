@@ -28,7 +28,7 @@ public class Runner implements Runnable {
     @Override
     public void run() {
         if (pCheck.validate()) {
-            if (!pCheck.isMcConfirmed()) {
+            if (!pCheck.isMcConfirmed() || pCheck.shouldForceUpdate()) {
                 if (pCheck.getXenID() > 0) {
                     // Ask for confirmation
                     p.sendMessage(ChatColor.translateAlternateColorCodes('&',
