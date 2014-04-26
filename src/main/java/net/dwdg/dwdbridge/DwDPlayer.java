@@ -150,6 +150,11 @@ public class DwDPlayer {
 
     public void setMcConfirmed(boolean confirmed) {
         this.mcConfirmed = confirmed;
+        String sqlStatement = "UPDATE `xf_user` SET `is_mcConfirmed`='"+(confirmed ? '1' : '0')+"' WHERE `user_id`='" + xenID + "'";
+        try {
+            DwDBridgePlugin.getPlugin().getDb().query(sqlStatement);
+        } catch (Exception e) {
+        }
     }
 
     public ArrayList<Integer> getSecondaryGroups() {

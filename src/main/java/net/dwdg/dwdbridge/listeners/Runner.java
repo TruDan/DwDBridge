@@ -32,7 +32,6 @@ public class Runner implements Runnable {
                 if (pCheck.getXenID() > 0) {
 
                     if (pCheck.shouldForceUpdate()) {
-
                         pCheck.rankSync();
                         pCheck.setMcConfirmed(true);
                     } else {
