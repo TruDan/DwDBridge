@@ -19,22 +19,30 @@ public class Runner implements Runnable {
 
     Player p;
     DwDPlayer pCheck;
-    
+
     public Runner(Player p) {
         this.p = p;
         this.pCheck = DwDPlayers.getPlayer(p.getUniqueId());
     }
-    
+
     @Override
     public void run() {
         if (pCheck.validate()) {
             if (!pCheck.isMcConfirmed() || pCheck.shouldForceUpdate()) {
                 if (pCheck.getXenID() > 0) {
-                    // Ask for confirmation
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            DwDBridgePlugin.getPlugin().getConfig().getString("messages.askConfirmation")
-                            .replaceAll("%N", pCheck.getXenUsername())
-                    ));
+
+                    if (pCheck.shouldForceUpdate()) {
+
+                        pCheck.rankSync();
+                        pCheck.setMcConfirmed(true);
+                    } else {
+
+                        // Ask for confirmation
+                        p.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                DwDBridgePlugin.getPlugin().getConfig().getString("messages.askConfirmation")
+                                .replaceAll("%N", pCheck.getXenUsername())
+                        ));
+                    }
                 } else {
                     // Hasnt tied forums account
                     p.sendMessage(ChatColor.translateAlternateColorCodes('&', DwDBridgePlugin.getPlugin().getConfig().getString("messages.errorGettingInfo")));
