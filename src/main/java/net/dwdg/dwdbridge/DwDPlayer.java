@@ -188,8 +188,8 @@ public class DwDPlayer {
                 if (gName != null) {
                     if (ranksToSync.contains(gName.toLowerCase())) {
                         DwDBridgePlugin.permission.playerAddGroup(player, gName);
-                        if (!ranksAdded.contains(pgName)) {
-                            ranksAdded += " " + pgName;
+                        if (!ranksAdded.contains(gName)) {
+                            ranksAdded += " " + gName;
                         }
                     }
                 }
